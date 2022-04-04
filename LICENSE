@@ -4,6 +4,16 @@
 
    TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
+  Preamble:
+  
+    This license is modified from the original Apache 2.0 license.
+    This License is provided  only for use which is not commercial in nature.  
+    Income producing application of this software is prohibited to all except 
+    its owner, who is its author, George Keith Watson. 
+    As of the date of creation of this GitHib project, April 4, 2022, there is no other 
+    contributor to this software, except as expressly stated in the source code
+    modules included in its packages.
+    
    1. Definitions.
 
       "License" shall mean the terms and conditions for use, reproduction,
