@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<!-- lifted from man+troff by doclifter -->
+<refentry>
+<!-- Reduced version exhibiting a bunch of OpenSSL werdnesses -->
+<refentryinfo><date>2018-04-25</date></refentryinfo>
+<refmeta>
+<refentrytitle>DEFINE_STACK_OF</refentrytitle>
+<manvolnum>3SSL</manvolnum>
+<refmiscinfo class='date'>2018-04-25</refmiscinfo>
+<refmiscinfo class='source'>1.1.0g</refmiscinfo>
+<refmiscinfo class='manual'>OpenSSL</refmiscinfo>
+</refmeta>
+<refnamediv>
+<refname>DEFINE_STACK_OF</refname>
+<refname>DEFINE_STACK_OF_CONST</refname>
+<refname>DEFINE_SPECIAL_STACK_OF</refname>
+<refname>DEFINE_SPECIAL_STACK_OF_CONST</refname>
+<refname>sk_TYPE_deep_copy</refname>
+<refname>sk_TYPE_set_cmp_func</refname>
+<refpurpose>stack container</refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<funcsynopsis>
+<funcsynopsisinfo>
+#include &lt;openssl/safestack.h&gt;
+
+STACK_OF(TYPE)
+DEFINE_STACK_OF(TYPE)
+DEFINE_STACK_OF_CONST(TYPE)
+DEFINE_SPECIAL_STACK_OF(FUNCTYPE, TYPE)
+DEFINE_SPECIAL_STACK_OF_CONST(FUNCTYPE, TYPE)
+
+typedef int (*sk_TYPE_compfunc)(const TYPE *const *a, const TYPE *const *b);
+typedef TYPE * (*sk_TYPE_copyfunc)(const TYPE *a);
+typedef void (*sk_TYPE_freefunc)(TYPE *a);
+
+</funcsynopsisinfo>
+<funcprototype>
+<funcdef>int <function>sk_TYPE_num</function></funcdef>
+    <paramdef>const STACK_OF(TYPE) * <parameter>sk</parameter></paramdef>
+</funcprototype>
+<funcprototype>
+<funcdef>STACK_OF(TYPE) *<function>sk_TYPE_deep_copy</function></funcdef>
+    <paramdef>const STACK_OF(TYPE) * <parameter>sk</parameter></paramdef>
+    <paramdef>sk_TYPE_copyfunc <parameter>copyfunc</parameter></paramdef>
+    <paramdef>sk_TYPE_freefunc <parameter>freefunc</parameter></paramdef>
+</funcprototype>
+<funcprototype>
+<funcdef><function>sk_TYPE_compfunc</function></funcdef>
+    <paramdef>* <parameter>sk_TYPE_set_cmp_func</parameter>( STACK_OF(TYPE) *sk , sk_TYPE_compfunc compare )</paramdef>
+</funcprototype>
+</funcsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para><indexterm><primary>Header</primary><secondary>DESCRIPTION</secondary></indexterm>
+Applications can create and use their own stacks by placing any of the macros
+described below in a header file. These macros define typesafe inline
+functions that wrap around the utility <emphasis role='strong' remap='B'>OPENSSL_sk_</emphasis> <?troff ps -1?>API.<?troff ps 0?>
+In the description here, <emphasis remap='I'><?troff ps -1?>TYPE<?troff ps 0?></emphasis> is used
+as a placeholder for any of the OpenSSL datatypes, such as <emphasis remap='I'>X509</emphasis>.</para>
+</refsect1>
+</refentry>
+

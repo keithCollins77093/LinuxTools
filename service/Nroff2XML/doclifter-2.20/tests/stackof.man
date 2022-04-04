@@ -1,0 +1,39 @@
+.\" Reduced version exhibiting a bunch of OpenSSL werdnesses
+.IX Title "DEFINE_STACK_OF 3SSL"
+.TH DEFINE_STACK_OF 3SSL "2018-04-25" "1.1.0g" "OpenSSL"
+.\" For nroff, turn off justification.  Always turn off hyphenation; it makes
+.\" way too many mistakes in technical documents.
+.if n .ad l
+.nh
+.SH "NAME"
+DEFINE_STACK_OF, DEFINE_STACK_OF_CONST, DEFINE_SPECIAL_STACK_OF,
+DEFINE_SPECIAL_STACK_OF_CONST, sk_TYPE_deep_copy, sk_TYPE_set_cmp_func \-
+stack container
+.SH "SYNOPSIS"
+.IX Header "SYNOPSIS"
+.Vb 1
+\& #include <openssl/safestack.h>
+\&
+\& STACK_OF(TYPE)
+\& DEFINE_STACK_OF(TYPE)
+\& DEFINE_STACK_OF_CONST(TYPE)
+\& DEFINE_SPECIAL_STACK_OF(FUNCTYPE, TYPE)
+\& DEFINE_SPECIAL_STACK_OF_CONST(FUNCTYPE, TYPE)
+\&
+\& typedef int (*sk_TYPE_compfunc)(const TYPE *const *a, const TYPE *const *b);
+\& typedef TYPE * (*sk_TYPE_copyfunc)(const TYPE *a);
+\& typedef void (*sk_TYPE_freefunc)(TYPE *a);
+\&
+\& int sk_TYPE_num(const STACK_OF(TYPE) *sk);
+\& STACK_OF(TYPE) *sk_TYPE_deep_copy(const STACK_OF(TYPE) *sk,
+\&                                   sk_TYPE_copyfunc copyfunc,
+\&                                   sk_TYPE_freefunc freefunc);
+\& sk_TYPE_compfunc (*sk_TYPE_set_cmp_func(STACK_OF(TYPE) *sk, sk_TYPE_compfunc compare));
+.Ve
+.SH "DESCRIPTION"
+.IX Header "DESCRIPTION"
+Applications can create and use their own stacks by placing any of the macros
+described below in a header file. These macros define typesafe inline
+functions that wrap around the utility \fBOPENSSL_sk_\fR \s-1API.\s0
+In the description here, \fI\s-1TYPE\s0\fR is used
+as a placeholder for any of the OpenSSL datatypes, such as \fIX509\fR.

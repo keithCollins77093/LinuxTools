@@ -1,0 +1,408 @@
+# All known problems with the manual pages in a desktop Ubuntu installation
+#
+# Send 1 was on 09 Dec 2003
+# Send 2 was on 17 Feb 2004
+# Send 3 was on 11 Jul 2004
+# Send 4 was on 20 Nov 2004
+# Send 5 was on 14 Jan 2005
+# Send 6 was on 01 Jan 2007
+# Send 7 was on 18 Jun 2013
+# Send 8 was on 19 Feb 2016
+# Send 9 was on 06 Jun 2018
+#
+A	Dot or single-quote at start of line turns it into a garbage command.
+	This is a serious error; some lines of your page get silently lost 
+	when it is formatted.
+B	( ) notation for mandatory parts of command syntax should be { }.
+C	Broken command synopsis syntax.  This may mean you're using a 
+	construction in the command synopsis other than the standard 
+	[ ] | { }, or it may mean you have running text in the command synopsis
+ 	section (the latter is not technically an error, but most cases of it
+	are impossible to translate into DocBook markup), or it may mean the 
+	command syntax fails to match the description.
+D	The .ce macro cannot be rendered in HTML, so I have replaced .ce
+	before captions with an .RS/.RE bloxk including both caption
+	and table.
+E	My translator trips over a useless command in list markup. 
+F	Nonexistent or non-local .Sx target.
+G	.Pp is structurally incorrect in an element list.
+H	Renaming SYNOPSIS because either (a) third-party viewers and 
+	translators will try to interpret it as a command synopsis and become 
+	confused, or (b) it actually needs to be named "SYNOPSIS" with no 
+	modifier for function protoypes to be properly recognized.
+I	Use of low-level troff hackery to set special indents or breaks can't 
+	be translated. The page will have rendering faults in HTML, and 
+	probably also under third-party man page browsers such as Xman, 
+	Rosetta, and the KDE help browser.  This patch eliminates .br, .ta, .ti,
+	.ce, .in, and \h in favor of requests like .RS/.RE that have
+	structural translations.
+J	Ambiguous or invalid backslash.  This doesn't cause groff a problem.
+	but it confuses doclifter and may confuse older troff implementations.
+K	Renaming stock man macros throws warnings in doclifter and is likely 
+	to cause failures on third-party manual browsers.  Please redo this 
+	page so it uses distinct names for the custom macros.
+L	List syntax error. This means .IP, .TP or .RS/.RE markup is garbled.
+	Common causes include .TP just before a section header, .TP entries
+	with tags but no bodies, and mandoc lists with no trailing .El.
+	These confuse doclifter, and may also mess up stricter man-page 
+	browsers like Xman and Rosetta.
+M	Missing Feature Test Macros header
+N	Extraneous . at start of line.
+O	Command-line options described are not actually implemented.
+P	Removed unnecessary \c that confused the doclifter parser.
+Q	.UR macro needs trailing .UE.
+R	.ce markup can't be structurally translated, and is likely
+	to cause rendering flaws in generated HTML.
+S	DEPRECATED: in function syntax cannot be translated.  Also, the
+	code and examples need to be marked up better.
+T	Junk at the beginning of the manual page.
+U	Unbalanced group in command synopsis. You probably forgot 
+	to open or close a [ ] or { } group properly.	
+W	Missing or garbled name section.  The most common form of garbling
+	is a missing - or extra -. Or your manual page may have been generated
+	by a tool that doesn't emit a NAME section as it should.  Or your page
+	may add running text such as a version or authorship banner.  These 
+	problems make it impossible to lift the page to DocBook.  They
+	can also confuse third-party manpage browsers and some implementations 
+	of man -k.
+V	.SS is not .SH and they cannot be used interchangeably. You get away
+	with this by accident in roff, but it will badly confuse other tools
+	that look at man pages.
+X	Unknown or invalid macro.  That is, one that does not fit in the
+	macro set that the man page seems to be using.  This is a serious
+	error; it often means part of your text is being lost or rendered
+	incorrectly.
+Y	I have been unable to identify an upstream maintainer for this
+	Ubuntu/Debian package, and am notifying the generic "Maintainer"
+	address in the package.  Please forward appropriately.  Also please
+	fix the package metadata so it identifies the upstream maintainers.
+Z	Your Synopsis is exceptionally creative.  Unfortunately, that means 
+	it cannot be translated to structural markup even when things like
+	running-text inclusions have been moved elswhere.
+a	Incorrect use of BSD list syntax confused doclifter's parser. 
+b	\c is an obscure feature; third-party viewers sometimes don't 
+	intepret it. Plain \ is safer. 
+c	Function declarations had to be modified in order to fit into
+	the DocBook DTD. This is not an error in troff usage, but it 
+	reduces the quality of the HTML that can be generated from this page
+	through the DocBook toolchain.
+d	.eo/.ec and complex tab-stop hackery can't be translated to XML/HTML
+	and are almost certain to confuse third-party readers such as
+	Rosetta and Xman.
+e	Macro definitions in the NAME section confuse doclifter and are
+	likely to screw up third-party man viewers with their own parsers.
+f	Presentation-level use of .SS could not be structurally 
+	translated. I changed lower-level instances to .TP or .B.
+g	Use of a double quote for inch measurements often confuses people
+	who aren't from the Anglosphere.
+h	Unbalanced .RS or .EE
+i	Non-ASCII character in document synopsis can't be parsed.
+j	Parenthesized comments in command synopsis.  This is impossible
+	to translate to DocBook.
+k	Misspelled macro name.
+l	Invalid or unterminated font escape.
+m	Contains a request or escape that is outside the portable subset that 
+        can be rendered by non-groff viewers such as the KDE and GNOME help 
+	browsers.
+n	C function syntax has extra or missing paren.
+o	TBL markup not used where it should be.  Tables stitched together
+	with .ta or list requests can't be lifted to DocBook and will often
+	choke third-party viewers such as TKMan, XMan, Rosetta, etc.
+p	Garbage trailiing \ in function synopsis.
+q	The .ul request used here can't be translated into document structure.
+	I put these files in a hanging list, which can be.
+r	I supplied a missing mail address. Without it, the .TP at the end of the
+	authors list was ill-formed.
+s	Changed page to use the .URL macro now preferred on man(7).
+t	Synopsis has to be immediately after NAME section for DocBook 
+	translation to work.
+u	Use local definitions of .EX/.EE or .DS/.DE to avoid low-level troff
+	requests in the page body.  There are plans to add these to groff man;
+	in the interim, this patch adds a compatible definition to your page.
+v	.in and .EX have crossed or inverted scopes.
+w	.SS markup in name section seriously confuses parsing, and sections
+	don't follow standard naming conventions.
+x	Syntax had to be rearranged because of an options callout.
+	This is still excessively complicated; third-party man-page
+	viewers are likely to choke on it.
+y	This page was generated from some sort of non-man markup.  Please
+        fix the upstream markup so that it generates a well-formed
+        manual page with the indicated corrections.
+z	Garbled comment syntax.
+%%
+y|acl.5			|	|
+y|afmtodit.1		|	|bug-groff@gnu.org
+b|american.5,english.5	|	|geoff@cs.hmc.edu
+3n|analog.1		|CZ	|analog-author@lists.meer.net
+y|AnyEvent::FAQ.3pm	|	|Marc Lehmann <schmorp@schmorp.de>
+1n|audispd.8		|*	|sgrubb@redhat.com
+y|autosp.1		|	|Bob Tennent <rdt@cs.queensu.ca>
+2n|B::Hooks::EndOfScope::PP.3pm,B::Hooks::EndOfScope::XS.3pm|W	|Florian Ragwitz <rafl@debian.org>
+2n|bash.1		|L	|chet.ramey@case.edu, bug-bash@gnu.org
+3n|btcflash.8		|J	|Daniel Baumann <daniel@debian.org>
+1n|BUF_MEM_free.3ssl,BUF_MEM_grow.3ssl,BUF_MEM_grow_clean.3ssl,BUF_MEM_new.3ssl,BUF_MEM_new_ex.3ssl,BUF_reverse.3ssl|W	|kurt@openssl.org
+p|bzfs.6		|o	|https://github.com/BZFlag-Dev/bzflag/pull/149
+3n|bzr.1,bzr.bzr.1	|JX	|bazaar@lists.canonical.com
+b|calc_tickadj.1	|C	|
+y|c_rehash.1ssl,openssl-c_rehash.1ssl,openssl-rehash.1ssl,rehash.1ssl	|	|https://github.com/openssl/openssl/pull/6267
+1n|calendar.1		|X	|Debian Bsdmainutils Team <pkg-bsdmainutils@teams.debian.net>
+3n|cdparanoia.1		|L	|paranoia-dev@xiph.org
+b|cgroups.7,cgroup_namespaces.7|v	|https://github.com/mkerrisk/man-pages/pull/10
+b|cherryd.1		|l	|
+b|chmoddic.1		|BC	|Canna@nec.co.jp
+3n|chroot.2		|EL	|bug-coreutils@gnu.org
+2n|claws-mail.1		|L	|paul@claws-mail.org
+y|cmake.1		|	|
+1n|CPAN::Meta::History::Meta_1_2.3pm,CPAN::Meta::History::Meta_1_3.3pm,CPAN::Meta::History::Meta_1_4.3pm|t	|Ken Williams <kwilliams@cpan.org>
+b|co.1,ident.1		|o	|rcs-bugs@gnu.org
+y|cpio.1		|	|bug-cpio@gnu.org
+1n|codepage.1		|C	|kbd@lists.altlinux.org
+3n|compose.1,edit.1	|*y	|mime-support@plessy.org
+1n|CURLOPT_PROXY_CAPATH.3|XY	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+n|CURLMOPT_SOCKETFUNCTION.3|*	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+3n|dash.1,sh.1,sh.distrib.1|J	|dash@vger.kernel.orgiq
+p|DECLARE_LHASH_OF.3ssl,OPENSSL_LH_COMPFUNC.3ssl,OPENSSL_LH_HASHFUNC.3ssl,OPENSSL_LH_DOALL_FUNC.3ssl,LHASH_DOALL_ARG_FN_TYPE.3ssl,IMPLEMENT_LHASH_HASH_FN.3ssl,IMPLEMENT_LHASH_COMP_FN.3ssl,lh_TYPE_new.3ssl,lh_TYPE_free.3ssl,lh_TYPE_insert.3ssl,lh_TYPE_delete.3ssl,lh_TYPE_retrieve.3ssl,lh_TYPE_doall.3ssl,lh_TYPE_doall_arg.3ssl,lh_TYPE_error.3ssl	|	|kurt@openssl.org
+s|DEFINE_STACK_OF.3ssl,DEFINE_SPECIAL_STACK_OF.3ssl,DEFINE_STACK_OF_CONST.3ssl,DEFINE_SPECIAL_STACK_OF_CONST.3ssl,OPENSSL_sk_deep_copy.3ssl,OPENSSL_sk_delete.3ssl,OPENSSL_sk_delete_ptr.3ssl,OPENSSL_sk_dup.3ssl,OPENSSL_sk_find.3ssl,OPENSSL_sk_find_ex.3ssl,OPENSSL_sk_free.3ssl,OPENSSL_sk_insert.3ssl,OPENSSL_sk_is_sorted.3ssl,OPENSSL_sk_new.3ssl,OPENSSL_sk_new_null.3ssl,OPENSSL_sk_num.3ssl,OPENSSL_sk_pop.3ssl,OPENSSL_sk_pop_free.3ssl,OPENSSL_sk_push.3ssl,OPENSSL_sk_set.3ssl,OPENSSL_sk_set_cmp_func.3ssl,OPENSSL_sk_shift.3ssl,OPENSSL_sk_sort.3ssl,OPENSSL_sk_unshift.3ssl,OPENSSL_sk_value.3ssl,OPENSSL_sk.3ssl,zero.3ssl,sk_TYPE_num.3ssl,sk_TYPE_value.3ssl,sk_TYPE_new.3ssl,sk_TYPE_new_null.3ssl,sk_TYPE_free.3ssl,sk_TYPE_zero.3ssl,sk_TYPE_delete.3ssl,sk_TYPE_delete_ptr.3ssl,sk_TYPE_push.3ssl,sk_TYPE_unshift.3ssl,sk_TYPE_pop.3ssl,sk_TYPE_shift.3ssl,sk_TYPE_pop_free.3ssl,sk_TYPE_insert.3ssl,sk_TYPE_set.3ssl,sk_TYPE_find.3ssl,sk_TYPE_find_ex.3ssl,sk_TYPE_sort.3ssl,sk_TYPE_is_sorted.3ssl,sk_TYPE_dup.3ssl,sk_TYPE_deep_copy.3ssl,sk_TYPE_set_cmp_func.3ssl|n	|kurt@openssl.org
+b|Parse::DebControl::Error.3pm|Wy	|
+y|devlink.8		|C	|netdev@vger.kernel.org
+n|dfu-programmer.1	|Q	|Weston Schmidt <weston_schmidt@alumni.purdue.edu>
+s|devnag.1		|J	|tex-live@tug.org
+s|dh_install.1		|iy	|
+p|dhclient.8		|U	|dhcp-bugs@isc.org
+y|dkms.8		|	|dkms-devel@dell.com
+2n|dmcs.1,mcs.1,gmcs.1	|LA	|mono-docs-list@lists.ximian.com
+1n|dmstats.8		|C	|Bryn M. Reeves <bmr@redhat.com>
+b|dosbox.1		|L	|
+y|driverless.1		|	|
+b|dump-acct.8		|U	|https://savannah.gnu.org/bugs/index.php?54040
+b|dv2dt.1		|C	|
+4n|dvipdf.1,font2c.1	|R	|epm@easysw.com
+2n|edgepaint.1		|W	|Yifan Hu <yifanhu@research.att.com>
+y|editres.1		|	|xorg-devel@lists.freedesktop.org
+4n|e2fsck.8		|o	|tytso@thunk.org
+3n|e2image.8		|J	|tytso@thunk.org
+4n|efax.1		|Jug	|edc@cce.com
+y|eqn.1,geqn.1		|	|bug-groff@gnu.org
+2n|irb.1,irb2.5.1	|a	|ruby-doc@ruby-lang.org
+1n|ethtool.8		|L	|netdev@vger.kernel.org
+p|exiv2.1		|L	|robin@clanmills.com
+p|extractres.1		|R	|https://github.com/rrthomas/psutils/pull/4
+3n|f2py.1,f2py2.7.1	|C	|f2py-users@cens.ioc.ee
+3n|faked-sysv.1,faked-tcp.1,faked.1,fakeroot-sysv.1,fakeroot-tcp.1,fakeroot.1|r	|schizo@debian.org
+b|feature_test_macros.7	|I	|mtk-manpages@gmx.net
+3n|formail.1,lockfile.1,procmail.1,procmailex.5,procmailrc.5,procmailsc.5|K	|srb@cuci.nl,guenther@sendmail.com
+p|fsck.ext2.8,fsck.ext3.8,fsck.ext4.8,fsck.ext4dev.8|o	|http://userweb.kernel.org/~kzak/util-linux/
+2n|fuzzyflakes.6x	|C	|Barry Dmytro <badcherry@mailc.net>
+1n|fwup_get_fw_type.3,fwup_get_fw_version.3,fwup_get_guid.3.gz,fwup_get_last_attempt_info.3,fwup_get_lowest_supported_version.3,fwup_get_ux_capsule_info.3,fwup_resource_iter_create.3,fwup_resource_iter_destroy.3,fwup_resource_iter_next.3,fwup_resource_iter_next.3,fwup_set_up_update.3,fwup_supported.3,libfwup.3,fwup_clear_status.3,fwup_get_guid.3,libfwup.h.3	|IXc	|Peter Jones <pjones@redhat.com>
+3n|gacutil.1,cli-gacutil.1|N	|mono-docs-list@lists.ximian.com
+y|gdiffmk.1		|Wk	|bug-groff@gnu.org
+3n|genisoimage.1	|oy	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+s|getafm.1		|R	|
+1n|getty.8,agetty.8	|m	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+b|gftodvi.1		|I	|
+p|gource.1		|C	|https://github.com/acaudwell/Gource/pull/155
+3n|gpm-types.7		|JC	|gpm@lists.linux.it
+y|grn.1			|	|bug-groff@gnu.org
+n|groff.1		|e	|bug-groff@gnu.org
+y|groff_char.7		|	|bug-groff@gnu.org
+s|groff_man.7		|	|bug-groff@gnu.org
+n|groff_tmac.5		|e	|bug-groff@gnu.org
+y|groffer.1		|	|bug-groff@gnu.org
+y|grog.1		|	|bug-groff@gnu.org
+n|gropdf.1		|eP	|bug-groff@gnu.org
+y|gtbl.1,tbl.1		|	|bug-groff@gnu.org
+b|gthumb.1		|L	|
+y|gvcolor.1		|	|
+y|gvpack.1		|	|
+1n|hddtemp.8		|L*	|hddtemp-dev@nongnu.org
+8n|hfsutils.1		|HJ	|Robert Leslie <rob@mars.org>
+b|hosts_access.5,hosts.allow.5,hosts.deny.5,hosts_options.5|I	|Wietse Venema <wietse@porcupine.org>
+1n|hp-logcapture.1	|Z	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+b|html2text.1		|C	|Eugene V. Lyubimkin <jackyf.devel@gmail.com>
+b|html2textrc.5		|X	|
+3n|hypertorus.6x	|C	|Jamie Zawinski <jwz@jwz.org>
+4n|icclink.1		|E	|malex@debian.org
+3n|icctrans.1		|L	|malex@debian.org
+4n|tifficc.1		|E	|malex@debian.org
+3n|icedax.1		|AI	|Heiko Eissfeldt <heiko@colossus.escape.de>, debburn-devel@lists.alioth.debian.org
+3n|ilbmtoppm.1		|L	|bryanh@giraffe-data.com
+p|includeres.1		|R	|https://github.com/rrthomas/psutils/pull/4
+b|inode.7		|I	|https://github.com/mkerrisk/man-pages/pull/10
+3n|intel_panel_fitter.1	|E	|intel-gfx@lists.freedesktop.org
+1n|inxi.1		|Cl	|https://github.com/smxi/inxi/issues/147
+3n|IO::WrapTie.3pm	|WC	|David F. Skoll <dfs@roaringpenguin.com>
+4n|ipppd.8		|L	|keil@isdn4linux.de
+2n|iptables-extensions.8	|JLU	|netfilter-devel@lists.netfilter.org
+s|ipv6calc.8,ipv6logconv.8,ipv6logstats.8,ipv6loganon.8	|L	|pb@bieringer.de
+3n|irda.7		|c	|Jean Tourrilhes <jt@hpl.hp.com>
+3n|ispell.1,buildhash.1,munchlist.1,findaffix.1,tryaffix.1,icombine.1,ijoin.1|C	|ispell-bugs@itcorp.com
+3n|ispell-wrapper.1	|C	|ispell-bugs@itcorp.com
+3n|lamd.1		|	|lam-devel@lam-mpi.org
+3n|lam.7,LAM.7		|L	|lam-devel@lam-mpi.org
+3n|lam-helpfile.5	|I	|lam-devel@lam-mpi.org
+b|lastcomm.1		|I	|https://savannah.gnu.org/bugs/index.php?39134
+p|lftp.1		|I	|lav@yars.free.net
+3n|libcaca-authors.3caca|W	|Sam Hocevar <sam@hocevar.net>
+3n|libcaca-canvas.3caca	|WJ	|Sam Hocevar <sam@hocevar.net>
+3n|libcaca-env.3caca	|WL	|Sam Hocevar <sam@hocevar.net>
+3n|libcaca-font.3caca	|WJ	|Sam Hocevar <sam@hocevar.net>
+3n|libcaca-ruby.3caca	|W	|Sam Hocevar <sam@hocevar.net>
+3n|libcaca-tutorial.3caca|W	|Sam Hocevar <sam@hocevar.net>
+y|libinput.4		|	|xorg-devel@lists.freedesktop.org
+p|libpng.3		|SJ	|png-mng-implement@lists.sourceforge.net 
+3n|libtiff.3tiff	|I	|tiff@lists.maptools.org
+1n|linkicc.1,transicc.1	|L	|Shiju p. Nair <shiju.p@gmail.com>, info@littlecm1s.com
+1n| List::Compare::Functional.3pm|HY	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+3n|list_audio_tracks.1	|W	|Heiko Eissfeldt <heiko@colossus.escape.de>, debburn-devel@lists.alioth.debian.org
+y|ln.1			|	|bug-coreutils@gnu.org
+1n|loadkeys.1		|U	|kbd@lists.altlinux.org
+3n|locate.findutils.1	|U	|bug-findutils@gnu.org
+1n|logilab-pytest.1	|Zw	|python-projects@lists.logilab.org 
+8n|lpr.1		|U	|papowell@lprng.com
+y|lynx.1,www-browser.1	|I	|lynx-dev@nongnu.org
+1n|mailx.1posix		|l	|mtk-manpages@gmx.net
+3n|makeindex.1		|J	|beebe@math.utah.edu
+p|mathspic.1		|JWt	|Dick Nickalls <dick@nickalls.org>
+3n|mawk.1		|R	|http://code.google.com/p/original-mawk/issues/detail?id=21&thanks=21&ts=1369758804
+b|mdoc.7		|X	|mtk-manpages@gmx.net
+2n|mke2fs.8,mkfs.ext2.8,mkfs.ext3.8,mkfs.ext4.8,mkfs.ext4dev.8|C	|Theodore  Ts'o <tytso@mit.edu>.
+3n|mkjobtexmf.1		|Ly	|heiko.oberdiek@gmail.com
+2n|mmcli.8		|X	|Martyn Russell <martyn@lanedo.com>
+3n|mono.1,cli.1		|JX	|mono-docs-list@lists.ximian.com
+3n|mono-config.5	|X	|mono-docs-list@lists.ximian.com
+3n|mpirun.1,mpirun.lam.1|L	|lam-devel@lam-mpi.org
+1n|mplayer.1		|CL	|diego@biurrun.de
+3n|mtools.5,mtools.conf.5|X	|info-mtools@gnu.org
+b|mtr.8			|J	|https://bugs.launchpad.net/mtr/+bug/1188596
+2n|namespaces.7		|I	|Michael Kerrisk <mtk.manpages@gmail.com>
+2n|nautilus.1		|L	|Ubuntu Desktop Team <ubuntu-desktop@lists.ubuntu.com>
+3n|nautilus-connect-server.1|L|nautilus-list@gnome.org
+3n|netpbm.1		|J	|bryanh@giraffe-data.com
+b|netstat.8		|f	|https://sourceforge.net/p/net-tools/bugs/41/
+1n|nfsmount.conf.5	|CY	|ubuntu-devel-discuss@lists.ubuntu.com
+2n|nmcli.1       	|CLf	|networkmanager-list@gnome.org
+2n|nsenter.1		|L	|Eric Biederman <ebiederm@xmission.com>
+3n|nsgmls.1		|CI	|James Clark <jjc@jclark.com>
+3n|ntfs-3g.secaudit.8	|C	|ntfs-3g-devel@lists.sf.net
+3n|ntfs-3g.usermap.8	|C	|ntfs-3g-devel@lists.sf.net
+1n|ntfssecaudit.8	|CY	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+s|ntp-wait.8,ntp-keygen.8,ntp.keys.5|C	|
+3n|nvidia-settings.1	|IxY	|ubuntu-devel-discuss@lists.ubuntu.com
+3n|nvidia-smi.1		|IfY	|ubuntu-devel-discuss@lists.ubuntu.com
+p|objdump.1,x86_64-linux-gnu-objdump.1	|U	|bug-binutils@gnu.org
+3n|ode.1		|e	|bug-plotutils@gnu.org
+3n|omfonts.1		|W	|Norbert Preining <preining@logic.at>
+4n|openvt.1,open.1	|L	|aeb@cwi.nl
+3n|orbd.1		|WyY	|ubuntu-devel-discuss@lists.ubuntu.com
+3n|orca.1		|s	|orca-list@gnome.org
+b|pandoc.1		|J	|http://johnmacfarlane.net/
+3n|pax.1posix		|DX	|Francesco Paolo Lovergine <frankie@debian.org>,mtk.manpages@gmail.com
+1n|qsub.1posix		|D	|mtk.manpages@gmail.com
+3n|pbmclean.1,pnmcomp.1,pnmnorm.1,pnmpad.1,pnmquant.1,pnmremap.1,pnmtotiff.1,pgmnorm.1,ppmcolors.1,ppmnorm.1,ppmntsc.1,ppmquant.1,ppmrainbow.1,ppmtogif.1,ppmtoxpm.1,tifftopnm.1|C	|bryanh@giraffe-data.com
+3n|pbget.1,pbput.1,pbputs.1	|W	|Dustin  Kirkland  <kirkland@ubuntu.com>
+3n|pbmtextps.1		|C	|Bryan Henderson <bryanh@giraffe-data.com>
+3n|pcap-filter.7	|I	|tcpdump-workers@lists.tcpdump.org
+y|pdfroff.1		|	|bug-groff@gnu.org
+1n|pdcp.1		|J	|garlick@llnl.gov
+1n|pdsh.1,pdsh.bin.1	|J	|garlick@llnl.gov
+1n|rpdcp.1		|z	|garlick@llnl.gov
+3n|pidgin.1		|T	|Sean Egan <seanegan@gmail.com>, Ben Tegarden <tegarden@uclink.berkeley.edu>, John Bailey <rekkanoryo@pidgin.im>
+3n|plot.1,plotfont.1	|W	|bug-plotutils@gnu.org
+3n|pnmhisteq.1,ppmcie.1,ppmlabel.1,sbigtopgm.1|R	|Bryan Henderson <bryanh@giraffe-data.com>
+3n|pnmpaste.1		|X	|Bryan Henderson <bryanh@giraffe-data.com>
+3n|pnmtotiffcmyk.1	|C	|Bryan Henderson <bryanh@giraffe-data.com>
+3n|pnmtofiasco.1	|e	|Bryan Henderson <bryanh@giraffe-data.com>
+3n|policytool.1		|Wy	|openjdk@lists.launchpad.net
+1n|postqueue.1		|C	|Wietse Venema <wietse@porcupine.org>
+y|preconv.1		|	|bug-groff@gnu.org
+2n|prlimit.1		|U	|Davidlohr Bueso <dave@gnu.org>
+b|proc.5,procfs.5	|vL	|https://github.com/mkerrisk/man-pages/pull/10
+y|pstree.1,pstree.x11.1	|	|Craig Small <csmall@small.dropbear.id.au> 
+b|pstops.1		|R	|
+b|ps2epsi.1		|j	|
+b|ps2pdfwr.1		|R	|
+y|pylint.1		|J	|code-quality@python.org
+2n|rake2.1.1		|L	|ruby-doc@ruby-lang.org
+b|random.7		|m	|mtk-manpages@gmx.net
+b|rcsfile.5		|d	|rcs-bugs@gnu.org
+1n|rdma.8		|C	|Leon Romanovsky <leonro@mellanox.com>
+y|refer.1		|	|bug-groff@gnu.org
+3n|regulatory.bin.5	|w	|linux-wireless@vger.kernel.org
+2n|request-key.8	|q	|David Howells <dhowells@redhat.com>
+2n|request-key.conf.5	|q	|David Howells <dhowells@redhat.com>
+b|rexec.3,rexec_af.3	|M	|mtk-manpages@gmx.net
+3n|rhythmbox-client.1	|L	|Sven Arvidsson <sa@whiz.se>, gnome-doc-list@gnome.org
+1n|ri.1,ri2.5.1		|G	|ruby-doc@ruby-lang.org
+b|rlog.1		|L	|rcs-bugs@gnu.org
+3n|rlwrap.1,readline-editor.1|J	|Chet Ramey <chet.ramey@case.edu>
+3n|rmid.1		|Wy	|openjdk@lists.launchpad.net
+3n|rmiregistry.1	|Wy	|openjdk@lists.launchpad.net
+n|roff.7		|e	|bug-groff@gnu.org
+b|rotatelogs.8		|L*<	|
+p|s3.4			|I	|xorg-devel@lists.freedesktop.org
+b|sane-lexmark.5	|L	|https://alioth.debian.org/tracker/index.php?func=detail&aid=315955&group_id=30186&atid=410366
+1n|scapy.1		|l	|Philippe Biondi <phil@secdev.org>
+y|screen.1		|LI	|screen-devel@gnu.org
+b|SDL_Init.3		|L	|sdl@lists.libsdl.org
+b|SDL_CDPlayTracks.3	|n	|docs@lists.libsdl.org
+y|seccomp.2		|	|
+3n|see.1,run-mailcap.1,print.1	|C	|mime-support@plessy.org
+2n|semanage-user.8,semanage-boolean.8,semanage-module.8,semanage-permissive.8|B	|Daniel Walsh <dwalsh@redhat.com>
+2n|semanage-fcontext.8	|BU	|Daniel Walsh <dwalsh@redhat.com>
+b|semop.2,semtimedop.2	|v	|https://github.com/mkerrisk/man-pages/pull/10
+y|setcap.8		|	|Andrew G. Morgan <morgan@kernel.org>
+2n|sg_xcopy.8		|l	|Douglas Gilbert <dgilbert@interlog.com>
+3n|sgmlspl.1		|L	|Ardo van Rangelrooij <ardo@debian.org>
+b|slapd.conf.5		|LI	|OpenLDAP-devel@OpenLDAP.org
+b|slapd-config.5	|LI	|OpenLDAP-devel@OpenLDAP.org
+b|slapo-constraint.5	|L	|OpenLDAP-devel@OpenLDAP.org
+b|slapo-retcode.5	|C	|OpenLDAP-devel@OpenLDAP.org
+b|software-properties-gtk.1	|W	|
+3n|spam.1		|C	|
+b|ssh_config.5,sshd_config.5|F	|
+1n|SSL_get_cipher_name.3ssl,SSL_get_current_cipher.3ssl,SSL_get_cipher_bits.3ssl, SSL_get_cipher_version.3ssl|p	|kurt@openssl.org
+1n|suffixes.7		|l	|Michael Kerrisk <mtk.manpages@gmail.com>
+y|synctex.1		|L	|tex-live@tug.org
+b|sysfs.5		|*	|Michael Kerrisk <mtk.manpages@gmail.com>
+8n|rb.1,rx.1,rz.1,sb.1,sx.1,sz.1|e	|Uwe Ohse <uwe@ohse.de>
+p|tar.1			|l	|bug-tar@gnu.org
+1n|tc-matchall.8	|h	|stephen@networkplumber.org
+y|tc-sample.8		|	|stephen@networkplumber.org
+p|tc-cbq-details.8,tc-cbq.8,tc-mqprio.8,tc-prio.8,tc-htb.8|B	|netdev@vger.kernel.org
+1n|tc-bpf.8		|CL	|netdev@vger.kernel.org
+1n|tc-nat.8		|C	|netdev@vger.kernel.org
+1n|tc-pie.8,tc-pedit.8	|L	|netdev@vger.kernel.org
+4n|tcpd.8		|I	|wietse@porcupine.org
+3n|tcpdmatch.8		|I	|wietse@porcupine.org
+1n|tcpdump.8		|l	|tcpdump-workers@lists.tcpdump.org
+3n|tek2plot.1		|W	|bug-plotutils@gnu.org
+3n|test.1,[.1		|CO	|bug-coreutils@gnu.org
+y|thermal-conf.xml.5	|	|Colin King <colin.king@ubuntu.com>
+3n|TIFFGetField.3tiff	|I	|tiff@lists.maptools.org
+3n|TIFFmemory.3tiff	|b	|tiff@lists.maptools.org
+3n|tnameserv.1		|Wy	|openjdk@lists.launchpad.net
+y|tidy.1		|	|tidy-develop@lists.sourceforge.net,html-tidy@w3.org
+1n|top.1			|CY	|Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>
+8n|tune2fs.8		|C	|tytso@thunk.org
+y|ubuntu-advantage.1,ua.1	|	|Ubuntu Desktop Team <ubuntu-desktop@lists.ubuntu.com>
+2n|unrar.1,unrar-nonfree.1|C	|Petr Cech <cech@debian.org>
+b|upstart-events.7	|I	|upstart-devel@lists.ubuntu.com
+b|usb-creator-gtk.8	|W	|Roderick B. Greening <roderick.greening@gmail.com>
+s|update-leap.1		|CX	|
+3n|uuencode.1posix	|I	|Francesco Paolo Lovergine <frankie@debian.org>
+2n|winemaker.1		|U	|wine-devel@winehq.org
+1n|vim-addon-manager.1,vam.1,vim-addons.1	|V	|James Vega <jamessan@debian.org>
+y|xlogo.1		|	|xorg-devel@lists.freedesktop.org
+1n|X509_SIG_getm.3ssl,X509_SIG_get0.3ssl|p	|https://github.com/openssl/openssl/pull/6429
+2n|XML::LibXML::Pattern.3pm|W	|perl-xml@listserv.ActiveState.com
+2n|XML::LibXML::Reader.3pm|W	|perl-xml@listserv.ActiveState.com
+2n|XML::LibXML::RegExp.3pm|W	|perl-xml@listserv.ActiveState.com
+2n|XML::LibXML::XPathExpression.3pm|W	|perl-xml@listserv.ActiveState.com
+gA|xmlto.1		|I	|tim@cyberelk.net
+3n|Xserver.1		|I	|xorg-devel@lists.freedesktop.org
+y|xterm.1		|	|xorg-devel@lists.freedesktop.org
+b|zic.8			|o	|https://github.com/mkerrisk/man-pages/pull/10
+1n|zip.1			|JC	|Info-ZIP-Dev@goatley.com
+3n|zipinfo.1		|*	|newt@pobox.com
+p|zipcloak.1,zipnote.1,zipsplit.1|I	|Info-ZIP-Dev@goatley.com
+3n|zlib.3		|C	|zlib@gzip.org

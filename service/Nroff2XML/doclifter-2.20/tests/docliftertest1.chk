@@ -1,0 +1,543 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE refentry PUBLIC "-//OASIS//DTD DocBook XML V4.4//EN"
+                   "http://www.oasis-open.org/docbook/xml/4.4/docbookx.dtd">
+<!-- lifted from man+troff by doclifter -->
+<refentry>
+<!-- Test load for doclifter
+Not&bsol;-Copyright © 2009 Raphaël Hertzog &lt;hertzog@debian.org&gt;
+Preceding line contains UTF&bsol;-8 copyright and e with diaeresis. -->
+<refmeta>
+<refentrytitle>docliftertest1</refentrytitle>
+<manvolnum>1</manvolnum>
+</refmeta>
+<refnamediv>
+<refname>docliftertest1</refname>
+<refpurpose>section 1 test load for doclifter </refpurpose>
+</refnamediv>
+<!-- body begins here -->
+<refsynopsisdiv id='synopsis'>
+<cmdsynopsis>
+  <command>docliftertest1</command>    <group choice='opt'><arg choice='plain'>-a </arg><arg choice='plain'>-b </arg></group>
+    <arg choice='opt' rep='repeat'><replaceable>optional</replaceable></arg>
+</cmdsynopsis>
+<cmdsynopsis>
+  <command>docliftertest1</command>    <arg choice='plain'>-c <replaceable>&lt;required&gt;</replaceable></arg>
+    <arg choice='plain'><replaceable>docliftertest1</replaceable></arg>
+    <arg choice='plain'>-d </arg>
+    <arg choice='opt'><replaceable>optional</replaceable></arg>
+    <arg choice='plain'><replaceable>docliftertest1</replaceable></arg>
+    <group choice='opt' rep='repeat'><arg choice='plain'>-e </arg><arg choice='plain'>-f <replaceable>foo</replaceable></arg></group>
+    
+</cmdsynopsis>
+</refsynopsisdiv>
+
+
+<refsect1 id='description'><title>DESCRIPTION</title>
+<para>This file is a test load for doclifter, intended to exercise as much as possible
+of its translation capability.  You are now reading the last sentence
+of an ordinary paragraph; by inspecting the output, you can check that 
+your formatter is generating a correct beginning-of-body even after
+the section title, and an end-of-body event at the end of the
+paragraph.</para>
+
+<para>This is an ordinary paragraph started by a <emphasis role='strong' remap='B'>.PP</emphasis> macro.
+A second line illustrates the effect of filling.</para>
+
+<para>This
+<emphasis role='strong' remap='B'>word</emphasis>
+should be bold. This 
+<emphasis remap='SM'>word</emphasis>
+should be small.  The word
+<acronym>ASCII</acronym>
+is actually an acronym.  This is a reference to section:
+<link linkend="see_also">SEE ALSO</link>
+it should be a link now.  Visiting the
+<link linkend="synopsis">SYNOPSIS</link>
+is important.  While the
+<acronym>SYNOPYOSIS</acronym>
+is not important and doesn't exist.
+<emphasis remap='I'>This</emphasis>sentence<emphasis remap='I'>should</emphasis>alternate<emphasis remap='I'>italic</emphasis>and<emphasis remap='I'>bold.</emphasis>
+The words in the last sentence should have been run together.</para>
+
+<para>This is an ordinary paragraph started by a <emphasis role='strong' remap='B'>.LP</emphasis> macro.
+A second line illustrates the effect of filling.</para>
+
+<para>This is a paragraph started by an <emphasis role='strong' remap='B'>.HP</emphasis> macro.
+We translate it to DocBook as an ordinary paragraph break.</para>
+<variablelist remap='IP'>
+  <varlistentry>
+  <term>&amp;</term>
+  <listitem>
+<para>This paragraph was led with <emphasis role='strong' remap='B'>.IP &amp; 5</emphasis>.
+A sample line to see how it formats -- it should turn into list markup.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>There should be an index entry generated right after this sentence.
+<indexterm><primary>Item</primary><secondary>&lt;sample&gt;</secondary></indexterm>
+And right before this one.</para>
+<variablelist remap='IP'>
+  <varlistentry>
+  <term>5</term>
+  <listitem>
+<para>This paragraph was led with <emphasis role='strong' remap='B'>.IP 5</emphasis>.
+This should turn into an ordinary paragraph.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+
+<para>This paragraph contains a URL, <ulink url='http://www.google.com'>http://www.google.com</ulink>, that doesn't have
+explicit <emphasis role='strong' remap='B'>.UR</emphasis>/<emphasis role='strong' remap='B'>.UN</emphasis> tags around it.  It should not be marked
+up, because <emphasis role='strong' remap='B'>.UR</emphasis>/<emphasis role='strong' remap='B'>.UN</emphasis> tags exist in this document.</para>
+<itemizedlist remap='IP+bullet'>
+  <listitem override='bullet'>
+<para>This is the first item in a bulleted list.</para>
+  </listitem>
+  <listitem override='bullet'>
+<para>This is the second item in a bulleted list.</para>
+  </listitem>
+  <listitem override='bullet'>
+<para>This is the third item in a bulleted list.</para>
+  </listitem>
+</itemizedlist>
+
+<para>This is another ordinary paragraph.  It's going to be immediately
+followed (without an intervening paragraph tag) by a table example
+lifted straight from Mike Lesk's original tbl paper:</para>
+
+<informaltable pgwide='0' frame='border'>
+  <tgroup cols='4' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <colspec colname='c4'/>
+    <thead>
+      <row>
+        <entry align='center' namest='c1' nameend='c4'>1970 Federal Budget Transfers</entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='center' namest='c1' nameend='c4'><?troff ps -2?>(in billions of dollars)<?troff ps 0?></entry>
+      </row>
+      <row>
+        <entry align='center' colsep='1'>State</entry>
+        <entry align='center' colsep='1'>Taxes</entry>
+        <entry align='center' colsep='1'>Money</entry>
+        <entry align='center'>Net</entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='center' colsep='1'></entry>
+        <entry align='center' colsep='1'>collected</entry>
+        <entry align='center' colsep='1'>spent</entry>
+        <entry align='center'></entry>
+      </row>
+    </thead>
+    <tbody>
+      <row>
+        <entry align='left' colsep='1'>New York</entry>
+        <entry align='right' colsep='1'>22.91</entry>
+        <entry align='right' colsep='1'>21.35</entry>
+        <entry align='right'>-1.56</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>New Jersey</entry>
+        <entry align='right' colsep='1'>8.33</entry>
+        <entry align='right' colsep='1'>6.96</entry>
+        <entry align='right'>-1.37</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Connecticut</entry>
+        <entry align='right' colsep='1'>4.12</entry>
+        <entry align='right' colsep='1'>3.10</entry>
+        <entry align='right'>-1.02</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Maine</entry>
+        <entry align='right' colsep='1'>0.74</entry>
+        <entry align='right' colsep='1'>0.67</entry>
+        <entry align='right'>-0.07</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>California</entry>
+        <entry align='right' colsep='1'>22.29</entry>
+        <entry align='right' colsep='1'>22.42</entry>
+        <entry align='right'>+0.13</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>New Mexico</entry>
+        <entry align='right' colsep='1'>0.70</entry>
+        <entry align='right' colsep='1'>1.49</entry>
+        <entry align='right'>+0.79</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Georgia</entry>
+        <entry align='right' colsep='1'>3.30</entry>
+        <entry align='right' colsep='1'>4.28</entry>
+        <entry align='right'>+0.98</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Mississippi</entry>
+        <entry align='right' colsep='1'>1.15</entry>
+        <entry align='right' colsep='1'>2.32</entry>
+        <entry align='right'>+1.17</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Texas</entry>
+        <entry align='right' colsep='1'>9.33</entry>
+        <entry align='right' colsep='1'>11.13</entry>
+        <entry align='right'>+1.80</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
+
+<para>In the above table, the presence or absence of cell borders may not be
+exactly as
+<citerefentry><refentrytitle>tbl</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+specified them (the DocBook DSSL toolchain sets BORDER=1 if there is
+any frame attribute, which is wrong; according to the DocBook
+specification, the frame attribute should only control box drawing
+around the exterior of the table).  But the horizontal spanning and
+centering should be displayed properly.</para>
+
+<refsect2 id='more_tables'><title>MORE TABLES</title>
+<para>We just started a subsection.</para>
+
+<para>Here's another table.  The first line of the table contains a heading
+centered across all three columns; each remaining line contains a
+left-adjusted item in the first column followed by two columns of
+numerical data.  (The numerical alignment won't translate into DocBook.)</para>
+
+<informaltable pgwide='0' frame='none'>
+  <tgroup cols='3' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <thead>
+      <row>
+        <entry align='center' namest='c1' nameend='c3'>Overall title</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row>
+        <entry align='left'>Item-a</entry>
+        <entry align='right'>34.22</entry>
+        <entry align='right'>9.1</entry>
+      </row>
+      <row>
+        <entry align='left'>Item-b</entry>
+        <entry align='right'>12.65</entry>
+        <entry align='right'>.02</entry>
+      </row>
+      <row>
+        <entry align='left'>Items: c,d,e</entry>
+        <entry align='right'>23</entry>
+        <entry align='right'>5.8</entry>
+      </row>
+      <row>
+        <entry align='left'>Total</entry>
+        <entry align='right'>69.87</entry>
+        <entry align='right'>14.92</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
+
+<para>This table illustrates the effect of the</para> 
+
+<table pgwide='1' frame='none'>
+  <title>expand</title>
+  <tgroup cols='4' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <colspec colname='c4'/>
+    <thead>
+      <row>
+        <entry align='center' namest='c1' nameend='c4'>Bell Labs Locations</entry>
+      </row>
+      <row>
+        <entry align='center'>Name</entry>
+        <entry align='center'>Address</entry>
+        <entry align='center'>Area Code</entry>
+        <entry align='center'>Phone</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row>
+        <entry align='left'>Holmdel</entry>
+        <entry align='left'>Holmdel, N. J. 07733</entry>
+        <entry align='right'>201</entry>
+        <entry align='right'>949-3000</entry>
+      </row>
+      <row>
+        <entry align='left'>Murray Hill</entry>
+        <entry align='left'>Murray Hill, N. J. 07974</entry>
+        <entry align='right'>201</entry>
+        <entry align='right'>582-6377</entry>
+      </row>
+      <row>
+        <entry align='left'>Whippany</entry>
+        <entry align='left'>Whippany, N. J. 07981</entry>
+        <entry align='right'>201</entry>
+        <entry align='right'>386-3000</entry>
+      </row>
+      <row>
+        <entry align='left'>Indian Hill</entry>
+        <entry align='left'>Naperville, Illinois 60540</entry>
+        <entry align='right'>312</entry>
+        <entry align='right'>690-2000</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</table>
+
+
+<para>Here's a really gnarly table with a lot of vertically spanned 
+content and several multiline items per line.  However this 
+is not done with a vertically-spanned format; for that, see the
+next example.</para>
+
+<informaltable pgwide='0' frame='border'>
+  <tgroup cols='4' align='center'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <colspec colname='c4'/>
+    <thead>
+      <row rowsep='1'>
+        <entry align='center' namest='c1' nameend='c4'><emphasis role='strong' remap='B'>Some Interesting Places</emphasis></entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='center' colsep='1'>Name</entry>
+        <entry align='center' colsep='1'>Description</entry>
+        <entry align='center' namest='c3' nameend='c4'>Practical Information</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row>
+        <entry align='left' colsep='1'>American Museum of Natural History</entry>
+        <entry align='left' colsep='1'><para>The collections fill 11.5 acres (Michelin) or 25 acres (MTA)
+of exhibition halls on four floors.
+There is a full-sized replica
+of a blue whale and the world's largest star sapphire (stolen in 1964).</para></entry>
+        <entry align='left' colsep='1'>Hours</entry>
+        <entry align='left'>10-5, ex. Sun 11-5, Wed. to 9</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Location</entry>
+        <entry align='left'>Central Park West &amp; 79th St.</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Admission</entry>
+        <entry align='left'>Donation: $1.00 asked</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Subway</entry>
+        <entry align='left'>AA to 81st St.</entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Telephone</entry>
+        <entry align='left'>212-873-4225</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Bronx Zoo</entry>
+        <entry align='left' colsep='1'>About a mile long and .6 mile wide, this is the largest zoo in America.
+A lion eats 18 pounds
+of meat a day while a sea lion eats 15 pounds of fish.</entry>
+        <entry align='left' colsep='1'>Hours</entry>
+        <entry align='left'>10-4:30 winter, to 5:00 summer</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Location</entry>
+        <entry align='left'>185th St. &amp; Southern Blvd, the Bronx.</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Admission</entry>
+        <entry align='left'>$1.00, but Tu,We,Th free</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Subway</entry>
+        <entry align='left'>2, 5 to East Tremont Ave.</entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Telephone</entry>
+        <entry align='left'>212-933-1759</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>Brooklyn Museum</entry>
+        <entry align='left' colsep='1'>Five floors of galleries contain American and ancient art.
+There are American period rooms and architectural ornaments saved
+from wreckers, such as a classical figure from Pennsylvania Station.</entry>
+        <entry align='left' colsep='1'>Hours</entry>
+        <entry align='left'>Wed-Sat, 10-5, Sun 12-5</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Location</entry>
+        <entry align='left'>Eastern Parkway &amp; Washington Ave., Brooklyn.</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Admission</entry>
+        <entry align='left'>Free</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Subway</entry>
+        <entry align='left'>2,3 to Eastern Parkway.</entry>
+      </row>
+      <row rowsep='1'>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Telephone</entry>
+        <entry align='left'>212-638-5000</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'>New-York Historical Society</entry>
+        <entry align='left' colsep='1'>All the original paintings for Audubon's
+<emphasis remap='I'>Birds of America</emphasis>
+are here, as are exhibits of American decorative arts, New York history,
+Hudson River school paintings, carriages, and glass paperweights.</entry>
+        <entry align='left' colsep='1'>Hours</entry>
+        <entry align='left'>Tues-Fri &amp; Sun, 1-5; Sat 10-5</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Location</entry>
+        <entry align='left'>Central Park West &amp; 77th St.</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Admission</entry>
+        <entry align='left'>Free</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Subway</entry>
+        <entry align='left'>AA to 81st St.</entry>
+      </row>
+      <row>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'></entry>
+        <entry align='left' colsep='1'>Telephone</entry>
+        <entry align='left'>212-873-3400</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
+
+<para>OK, here is a table example with spanned vertical format.  It
+illustrates the vertical-spanning bug noted on the 
+<citerefentry><refentrytitle>doclifter</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+manual page (but
+<citerefentry><refentrytitle>troff2docbook</refentrytitle><manvolnum>1</manvolnum></citerefentry>
+translates this table correctly).  If the translation were completely
+correct, the "E" entry would span one row further downward.</para>
+
+<informaltable pgwide='0' frame='all'>
+  <tgroup cols='3' align='center' colsep='1' rowsep='1'>
+    <colspec colname='c1'/>
+    <colspec colname='c2'/>
+    <colspec colname='c3'/>
+    <thead>
+      <row rowsep='1'>
+        <entry align='left'>A</entry>
+        <entry align='left'>B</entry>
+        <entry align='left'>C</entry>
+      </row>
+    </thead>
+    <tbody>
+      <row>
+        <entry align='left'>D</entry>
+        <entry align='left' morerows='2' valign='middle'>E</entry>
+        <entry align='left'>F</entry>
+      </row>
+      <row>
+        <entry align='left'>G</entry>
+        <entry align='left'>H</entry>
+      </row>
+      <row>
+        <entry align='left'>I</entry>
+        <entry align='left'>J</entry>
+      </row>
+    </tbody>
+  </tgroup>
+</informaltable>
+
+
+
+<para>Now we'll test PIC translation to SVG.
+
+<mediaobject remap='PIC'><imageobject>
+<?xml version="1.0" encoding="ISO-8859-1" standalone="no"?></para>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "<ulink url='http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd'>http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd</ulink>">
+<svg version="1.1" baseProfile="full" id="body" width="8in" height="8in" viewBox="0 0 1 1" preserveAspectRatio="none" xmlns="<ulink url='http://www.w3.org/2000/svg'>http://www.w3.org/2000/svg</ulink>" xmlns:xlink="<ulink url='http://www.w3.org/1999/xlink'>http://www.w3.org/1999/xlink</ulink>" xmlns:ev="<ulink url='http://www.w3.org/2001/xml-events'>http://www.w3.org/2001/xml-events</ulink>">
+<title>SVG drawing</title>
+<desc>This was produced by version 4.4 of GNU libplot, a free library for exporting 2-D vector graphics.</desc>
+<rect id="background" x="0" y="0" width="1" height="1" stroke="none" fill="white"/>
+<g id="content" transform="translate(0.45312,0.5) scale(1,-1) scale(0.125) " xml:space="preserve" stroke="black" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10.433" stroke-dasharray="none" stroke-dashoffset="0" stroke-opacity="1" fill="none" fill-rule="evenodd" fill-opacity="1" font-style="normal" font-variant="normal" font-weight="normal" font-stretch="normal" font-size-adjust="none" letter-spacing="normal" word-spacing="normal" text-anchor="start">
+<rect x="0" y="-0.25" width="0.75" height="0.5" stroke-width="0.0094118" />
+<text transform="translate(0.26306,-0.049028) scale(1,-1) scale(0.0069444) " font-family="Helvetica,sans-serif" font-size="20px" stroke="none" fill="black" >box</text>
+</g>
+</svg>
+</imageobject></mediaobject>
+
+<para>This line tests recognition of <superscript><emphasis remap='I'>superscripting</emphasis></superscript>)
+,br
+This line tests recognition of the <superscript>other</superscript> superscript idiom.</para>
+
+</refsect2>
+</refsect1>
+
+<refsect1 id='files'><title>FILES</title>
+<para>The following items illustrate <emphasis role='strong' remap='B'>.TP</emphasis> markup:</para>
+<variablelist remap='TP'>
+  <varlistentry>
+  <term><filename>${HOME}/.profile</filename></term>
+  <listitem>
+<para>read at startup by 
+<citerefentry><refentrytitle>sh</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para>
+  </listitem>
+  </varlistentry>
+  <varlistentry>
+  <term><filename>/etc/hosts</filename></term>
+  <listitem>
+<para>list of static host addresses used by the <citerefentry><refentrytitle>bind</refentrytitle><manvolnum>8</manvolnum></citerefentry> library.</para>
+  </listitem>
+  </varlistentry>
+</variablelist>
+</refsect1>
+
+<refsect1 id='see_also'><title>SEE ALSO</title>
+<para><citerefentry><refentrytitle>ls</refentrytitle><manvolnum>1</manvolnum></citerefentry>,
+<citerefentry><refentrytitle>mkdir</refentrytitle><manvolnum>1</manvolnum></citerefentry>.</para>
+<!-- End -->
+</refsect1>
+</refentry>
+

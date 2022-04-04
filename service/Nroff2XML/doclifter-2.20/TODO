@@ -1,0 +1,10 @@
+Bugs:
+
+* Docbook 5 translation is incomplete; inclusions won't work,
+  entities are untested.
+
+* doclifter doesn't know about groff compatibility mode; de and de1 are
+  treated as equivalent.
+
+See the PATCHES file for other, more minor problems mainly due to bad markup.
+
