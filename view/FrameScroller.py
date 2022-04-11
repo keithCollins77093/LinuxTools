@@ -22,6 +22,7 @@
 from tkinter import Frame, LabelFrame, Tk, Text, Scrollbar, Label, \
                     BOTTOM, W, RIGHT, X, Y, VERTICAL, HORIZONTAL, BOTH, INSERT
 
+
 class FrameScroller(LabelFrame):
     def __init__(self, container, name: str, **keyWordArguments):
         LabelFrame.__init__(self, container, name=name)

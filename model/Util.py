@@ -49,6 +49,7 @@ from functools import partial
 from signal import Signals
 from copy import deepcopy
 from collections import OrderedDict
+from enum import Enum
 
 #   Installation and Distribution:
 #       INSTALLATION_FOLDER needs to have the correct value both when the source *.tar.gz file is
@@ -58,6 +59,7 @@ from collections import OrderedDict
 #           2)  Use start folder or
 #           2.5)    Ask user where they want the source folders and run environment installed.
 #
+
 
 if platform.system() == 'Windows':
     USER_HOME   = 'C:\\Users\\user'
@@ -122,6 +124,35 @@ APPLICATION_TEST_DATA       = 'testData'
 MS_DOCX_SAMPLES             = 'docx'
 
 APP_STATS_FOLDER            = 'appStats'
+
+
+class Cursors(Enum):
+    Hand_1      = 'hand1'
+    Hand_2      = 'hand2'
+    Arrow       = 'arrow'
+    Circle      = 'circle'
+    Clock       = 'clock'
+    Cross       = 'cross'
+    DotBox      = 'dotbox'
+    Exchange    = 'exchange'
+    Fluer       = 'fleur'
+    Heart       = 'heart'
+    Man         = "man"
+    Mouse       = 'mouse'
+    Pirate      = 'pirate'
+    Plus        = 'plus'
+    Shuttle     = "shuttle"
+    Sizing      = 'sizing'
+    Spider      = 'spider'
+    Spraycan    = 'spraycan'
+    Star        = 'star'
+    Target      = 'target'
+    Tcross      = 'tcross'
+    Trek        = 'trek'
+    Watch       = 'watch'
+
+    def __str__(self):
+        return self.value
 
 
 class JsonIndex:

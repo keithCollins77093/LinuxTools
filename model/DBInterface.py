@@ -321,13 +321,14 @@ def savePs_lf_A_OutputToDB(self, argv, consoleOutput):
     #   Check to see if a table with the same name already exists in USER_CONSOLE_OUT_DB
     if not tableName in dbMetaData.tableNames:
         #   F  S  UID  PID  PPID  C  PRI  NI  ADDR  SZ  WCHAN  TTY  TIME  CMD
-        cursor.execute("CREATE TABLE " + tableName + " (rowId INTEGER PRIMARY KEY AUTOINCREMENT, "
+        cursor.execute("""CREATE TABLE {tableName} (rowId INTEGER PRIMARY KEY AUTOINCREMENT, "
                                                      "runTimeStamp TEXT KEY NOT NULL, "
                                                      "F TEXT NOT NULL, S TEXT NOT NULL, UID TEXT NOT NULL,"
                                                      "PID TEXT KEY NOT NULL, PPID TEXT NOT NULL,"
                                                      "C TEXT NOT NULL, PRI TEXT NOT NULL, NI TEXT NOT NULL,"
                                                      "ADDR TEXT NOT NULL, SZ TEXT NOT NULL, WCHAN TEXT NOT NULL,"
-                                                     "TTY TEXT NOT NULL, TIME TEXT NOT NULL, CMD TEXT NOT NULL)")
+                                                     "TTY TEXT NOT NULL, TIME TEXT NOT NULL, CMD TEXT NOT NULL)""".
+                       format(tableName=tableName))
 
         #   Second, add an entry in the DB's table index for the new table.
         tableCreateTimeStamp    = str(datetime.datetime.now())
@@ -337,9 +338,9 @@ def savePs_lf_A_OutputToDB(self, argv, consoleOutput):
                         "LinuxLogReader.view.Console", accessRights))
 
     for processId, processRecord in tableRows.items():
-        cursor.execute(
-            "INSERT INTO " + tableName + " (runTimeStamp, F, S, UID, PID, PPID, C, PRI, NI, ADDR, SZ, WCHAN, TTY, TIME, CMD) "
-                                         "VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+        cursor.execute("""INSERT INTO {tableName} 
+                            (runTimeStamp, F, S, UID, PID, PPID, C, PRI, NI, ADDR, SZ, WCHAN, TTY, TIME, CMD) 
+                            VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)""".format(tableName=tableName),
             (str(self.consoleView.lastCommandRunTime), processRecord['F'], processRecord['S'], processRecord['UID'],
              processRecord['PID'], processRecord['PPID'],
              processRecord['C'], processRecord['PRI'], processRecord['NI'], processRecord['ADDR'], processRecord['SZ'],
@@ -488,9 +489,9 @@ def saveDpkg_l_OutputToDB(self, argv, consoleOutput):
 
     #   Check to see if a table with the same name already exists in USER_CONSOLE_OUT_DB
     if not tableName in dbMetaData.tableNames:
-        cursor.execute("CREATE TABLE " + tableName + " (rowId INTEGER PRIMARY KEY AUTOINCREMENT, "
-                                                     "runTimeStamp TEXT KEY NOT NULL, packageName TEXT KEY NOT NULL, version TEXT NOT NULL,"
-                                                     "architecture TEXT KEY, description TEXT)")
+        cursor.execute("""CREATE TABLE {tableName} (rowId INTEGER PRIMARY KEY AUTOINCREMENT, 
+                         runTimeStamp TEXT KEY NOT NULL, packageName TEXT KEY NOT NULL, version TEXT NOT NULL,
+                         architecture TEXT KEY, description TEXT)""".format(tableName=tableName))
 
         #   Second, add an entry in the DB's table index for the new table.
         tableCreateTimeStamp    = str(datetime.now())
@@ -501,10 +502,11 @@ def saveDpkg_l_OutputToDB(self, argv, consoleOutput):
 
     #   Third, add the command output rows to the new table.
     for packageName, packageRecord in tableRows.items():
-        cursor.execute(
-            "INSERT INTO " + tableName + " (runTimeStamp, packageName, version, architecture, description) VALUES(?,?,?,?,?)",
-            (str(self.consoleView.lastCommandRunTime), packageRecord["Name"], packageRecord["Version"],
-             packageRecord["Architecture"], packageRecord["Description"]))
+        cursor.execute("""INSERT INTO {tableName} 
+                        (runTimeStamp, packageName, version, architecture, description) VALUES(?,?,?,?,?)""".
+                       format(tableName=tableName),
+                        (str(self.consoleView.lastCommandRunTime), packageRecord["Name"], packageRecord["Version"],
+                         packageRecord["Architecture"], packageRecord["Description"]))
 
     connection.commit()
     connection.close()
@@ -655,7 +657,7 @@ class DBMetaData_SQLite:
         self.tableNames = []
 
         #   print('Looking at the meta data:\t' + self.dbFileName)
-        cursor.execute('SELECT * FROM sqlite_master WHERE type=\'table\' ORDER BY name')
+        cursor.execute("""SELECT * FROM sqlite_master WHERE type='table' ORDER BY name""")
         #   This can return index definition rows as well
         for row in cursor:
             tableName   = row[2]

@@ -21,6 +21,9 @@ elif 'HOME' in os.environ:
 else:
     USER_HOME = '~'
 
+USER_INSTALLATION_FOLDER    = 'PycharmProjects/LinuxTools'
+USER_DATA_FOLDER            = 'PycharmProjects/LinuxTools/appData'
+
 if platform.system() == 'Windows':
     INSTALLATION_FOLDER     = 'C:\\Users\\user\\PycharmProjects\\LinuxLogForensics'
     PYCHARM_PROJECTS_FOLDER         = USER_HOME + '\\PycharmProjects'

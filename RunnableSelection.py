@@ -86,9 +86,6 @@
 #               Sort order toggle.
 #               Switch to selected content filtering view.
 #
-#       2022-04-08: Features to add:
-#           Notebook tab menu:  Delete Tab; Move to Dialog, Move tab left or right or to beginning or end.
-#           Drag tabs to new position.
 #
 
 from subprocess import Popen, PIPE, STDOUT
@@ -107,24 +104,14 @@ from copy import deepcopy
 from tkinter import Tk, LabelFrame, Label, Listbox, OptionMenu, Button, Entry, Text, messagebox, Scrollbar, \
                     Frame, Checkbutton, Menu, Toplevel,  \
                     SUNKEN, RIDGE, RAISED, GROOVE, SINGLE, MULTIPLE, BROWSE, EXTENDED, END, NORMAL, DISABLED, \
-                    BOTTOM, TOP, RIGHT, HORIZONTAL, VERTICAL, X, Y, N, W, BOTH, \
+                    BOTTOM, TOP, RIGHT, HORIZONTAL, VERTICAL, X, Y, BOTH, \
                     BooleanVar
 from tkinter.ttk import Notebook
 
-from model.Util import Cursors
 from model.HelpContent import HelpContent
 from view.Help import HelpDialog
-from model.ManPage import ManPage, ManSection
-from model.ApplicationEvents import ApplicationEvent, EventManager, EventType
-from view.Components import JsonTreeViewFrame, JsonTreeView
-from view.UtilityArgumentConfig import ConfigSettings
-from view.FrameScroller import FrameScroller
-from view.Console import ConsoleView
-from view.ToolManager import ToolManagerTabs, SynopsisPanel
 
-PROGRAM_TITLE           = "Linux Tool Manager"
-CLI_ACTIVE              = False
-CLI_HELP_DEVELOPER      = False
+PROGRAM_TITLE = "Linux Tool Manager"
 
 USAGE_HELP  = "\nHelp using Linux Tool Manager:\n" \
               "\tDevelopment Plans:\tActions which will be implemented:\n" \
@@ -143,6 +130,35 @@ USAGE_HELP  = "\nHelp using Linux Tool Manager:\n" \
               "\t\t12. From man page available list, show man page, searchable. \n" \
               "\t\t13. From man page available list, show man page in navigatable sections. \n" \
               "\t\t14. Group commands by tags.  Include a default set for major functional groups and let user add their own. \n"
+
+
+class Cursors(Enum):
+    Hand_1      = 'hand1'
+    Hand_2      = 'hand2'
+    Arrow       = 'arrow'
+    Circle      = 'circle'
+    Clock       = 'clock'
+    Cross       = 'cross'
+    DotBox      = 'dotbox'
+    Exchange    = 'exchange'
+    Fluer       = 'fleur'
+    Heart       = 'heart'
+    Man         = "man"
+    Mouse       = 'mouse'
+    Pirate      = 'pirate'
+    Plus        = 'plus'
+    Shuttle     = "shuttle"
+    Sizing      = 'sizing'
+    Spider      = 'spider'
+    Spraycan    = 'spraycan'
+    Star        = 'star'
+    Target      = 'target'
+    Tcross      = 'tcross'
+    Trek        = 'trek'
+    Watch       = 'watch'
+
+    def __str__(self):
+        return self.value
 
 
 class MenuItemType(Enum):
@@ -177,9 +193,7 @@ class PopupMenuItem(Enum):
     ShowManPage         = ("Show this Man Page", MenuItemType.Command)
     ShowManPageList     = ("Show Man Pages in List", MenuItemType.Command)
     ConfigureTool       = ("Configure Tool for this Runnable", MenuItemType.Command)
-    SynopsisOptions     = ("Configure with Synopsis and Options", MenuItemType.Command)
     ToolManager         = ("Tool Manager", MenuItemType.Command)
-    Console             = ("Run Console", MenuItemType.Command)
 
     def __str__(self):
         return self.value[0]
@@ -195,7 +209,7 @@ class PopupMenuItem(Enum):
     @staticmethod
     def listManpageItems():
         return (PopupMenuItem.ShowManPage, PopupMenuItem.ShowManPageList, PopupMenuItem.ConfigureTool,
-                PopupMenuItem.SynopsisOptions, PopupMenuItem.ToolManager, PopupMenuItem.Console)
+                PopupMenuItem.ToolManager)
 
 
 class PopupMenu(Menu):
@@ -279,13 +293,13 @@ class PopupMenu(Menu):
         self.menuFloating = True
 
     def unmapMenu(self, event):
-        #   print("unmapMenu - self.menuFloating:\t" + str(self.menuFloating))
+        print("unmapMenu - self.menuFloating:\t" + str(self.menuFloating))
         if not self.winfo_ismapped() and not self.menuFloating:
             self.unpost()
             self.popupShown = False
 
     def destroyMenu(self, event):
-        #   print("destroyMenu")
+        print("destroyMenu")
         #   self.destroy()
         self.unpost()
         self.popupShown = False
@@ -299,12 +313,9 @@ class ToolManager(Notebook):
     def __init__(self, container, **keyWordArguments):
         Notebook.__init__(self, container)
 
-        self.runnableSelection = RunnableSelection(self, self.messageReceiver, text="Runnable File Selection",
-                                                   border=5, relief=SUNKEN)
-        self.installationChecker = InstallationChecker(self, text="Installation Checker")
-        self.toolDesigner = ToolDesigner(self, self.messageReceiver, text="Linux Tool Designer")
-        self.manPageTreeView = None
-        self.toolConfigurationSheet = None
+        self.runnableSelection = RunnableSelection(mainView, text="Runnable File Selection", border=5, relief=SUNKEN)
+        self.installationChecker = InstallationChecker(mainView, text="Installation Checker")
+        self.toolDesigner = ToolDesigner(mainView, text="Linux Tool Designer")
 
         self.add(self.runnableSelection, state=NORMAL, sticky='nsew', padding=(5, 5), text='Runnable Selection')
         self.add(self.installationChecker, state=NORMAL, sticky='nsew', padding=(5, 5), text='Installation Checker')
@@ -312,50 +323,7 @@ class ToolManager(Notebook):
         self.tabIdRunnableSel = 0
         self.tabIdInstallCheck = 1
         self.tabIdToolDesigner = 2
-
-        self.tabIdManPageContentTree = None
-        self.tabCount   = 3
-
         self.select(tab_id=self.tabIdToolDesigner)
-
-    def messageReceiver(self, message: dict):
-        if not isinstance(message, dict):
-            return
-        if 'source' in message:
-            if message['source'] == "ToolDesigner.Configure Tool for this Runnable":
-                if 'action' in message:
-                    if message['action'] == "Add Notebook Tab":
-                        if 'manPage' in message and isinstance(message['manPage'], ManPage):
-                            self.manPageTreeView = JsonTreeViewFrame(self, message['manPage'].getContent(),
-                                                                     {"openBranches": True, "mode": JsonTreeView.MODE_STRICT,
-                                                             'listener': self.messageReceiver})
-                            self.tabIdManPageContentTree = self.tabCount
-                            self.tabCount += 1
-                            self.add(self.manPageTreeView, state=NORMAL, sticky='nsew', padding=(10, 10),
-                                     text=message['manPage'].name)
-
-                            #   Next Tab is the property sheet with the options:
-                            print("CONSTRUCTING PROPERTY SHEET")
-                            self.toolConfigDialog = Toplevel(self)
-                            self.toolConfigDialog.geometry("400x600+800+50")
-                            toolFrameScroller = FrameScroller(self.toolConfigDialog, "frameScroller")
-
-                            #   May be needed also:
-                            #       message['manPage'].getContent()['Sections']
-                            optionsContent = message['manPage'].getContent()['Options']
-                            optionsContent[ManSection.Synopsis]  = message['manPage'].getContent()['Synopsis']
-                            self.toolConfigurationSheet = \
-                                ConfigSettings(toolFrameScroller.getScrollerFrame(),
-                                               message['manPage'].getName(),
-                                               message['manPage'].getContent()['Options'],
-                                               topLevel=self.toolConfigDialog)
-                            toolFrameScroller.pack(fill=BOTH, expand=True)
-                            self.toolConfigurationSheet.pack(expand=True, anchor=N + W)
-                            self.toolConfigDialog.mainloop()
-                            #   self.tabIdToolConfiguration = self.tabCount
-                            #   self.tabCount += 1
-                            #   self.add(toolFrameScroller, state=NORMAL, sticky='nsew', padding=(10, 10),
-                            #            text='Tool Config')
 
 
 class Utils:
@@ -413,12 +381,9 @@ class Utils:
 
 class RunnableSelection(LabelFrame):
 
-    def __init__(self, container, listener, **keyWordArguments):
+    def __init__(self, container, **keyWordArguments):
 
         LabelFrame.__init__(self, container, keyWordArguments)
-        if listener is not None and not callable(listener):
-            raise Exception("RunnableSelection constructor - Invalid listener argument:  " + str(listener))
-        self.listener = listener
 
         self.folderLabel    = Label(self, text=" Paths with Command Executable Files ", border=3, relief=RIDGE)
 
@@ -500,7 +465,7 @@ class ToolDesigner(LabelFrame):
         ...
     """
 
-    def __init__(self, container, listener=None, **keyWordArguments):
+    def __init__(self, container, **keyWordArguments):
         """
         Entire content needs to be grid'd into a frame and the frame placed into the Text as its sole window.
         Filter Entry's can be at bottom or top as long as the fact that they're regular expression filters is clear.
@@ -510,10 +475,7 @@ class ToolDesigner(LabelFrame):
         :param container:
         :param keyWordArguments:
         """
-        if listener is not None and not callable(listener):
-            raise Exception("ToolDesigner constructor - Invalid listener argument:  " + str(listener))
         LabelFrame.__init__(self, container, keyWordArguments)
-        self.listener = listener
 
         self.filterPopupMenu = PopupMenu(self, title="Filter Options", features=PopupMenuItem.listFilterItems(),
                                          design=None, listener=self.messageReceiver)
@@ -521,7 +483,6 @@ class ToolDesigner(LabelFrame):
                                             design=None, listener=self.messageReceiver)
         self.filterPopupShown = False
         self.manPagePopupShown = False
-        self.consoleView = None
 
         self.bind('<Button-3>', self.rightClickHandler)
         self.configure(cursor=Cursors.Hand_1.value)
@@ -534,14 +495,12 @@ class ToolDesigner(LabelFrame):
             for fileName in fileList:
                 self.manFileViewMapFiltered[filePath].append(True)
 
+        horizontalScroller = Scrollbar(self, orient=HORIZONTAL)
+        verticalScroller = Scrollbar(self, orient=VERTICAL)
+        self.contentText        = Text(self, state=DISABLED, border=5, relief=SUNKEN, padx=5, pady=5,
+                                       yscrollcommand=verticalScroller.set, xscrollcommand=horizontalScroller.set)
+
         self.contentFrame               = None
-        self.manPageTreeView            = None
-        self.toolManagerToplevel        = None
-        self.toolManager                = None
-        self.synopsisTopLevel           = None
-        self.synopsisPanel              = None
-
-
         self.manFileListMap             = None
         self.manFilterEntryMap          = None
         self.manFilterGoButtonMap       = None
@@ -554,21 +513,12 @@ class ToolDesigner(LabelFrame):
 
         self.constructLayout(self.manFileMap)
         self.setModel(self.manFileMap)
-        #   self.listViewState()
+
+        self.listViewState()
 
     def constructLayout(self, manFileMap: OrderedDict):
-        #   print("constructLayout")
-        horizontalScroller = Scrollbar(self, orient=HORIZONTAL, border=3, relief=GROOVE, width=15,
-                                       cursor=Cursors.Hand_1.value)
-        verticalScroller = Scrollbar(self, orient=VERTICAL, border=3, relief=GROOVE, width=15,
-                                     cursor=Cursors.Hand_1.value)
-        self.contentText        = Text(self, state=DISABLED, border=5, relief=SUNKEN, padx=5, pady=5,
-                                       yscrollcommand=verticalScroller.set, xscrollcommand=horizontalScroller.set)
+        print("constructLayout")
         self.contentFrame   = LabelFrame(self.contentText, text="Runnable File Search & Config", border=5, relief=RAISED )
-
-        horizontalScroller.config(command=self.contentText.xview)
-        verticalScroller.config(command=self.contentText.yview)
-
         self.manFileListMap     = OrderedDict()
         self.manFilterEntryMap     = OrderedDict()
         self.manFilterGoButtonMap     = OrderedDict()
@@ -579,6 +529,16 @@ class ToolDesigner(LabelFrame):
         self.listboxNameMap = OrderedDict()
         self.listboxPathMap = OrderedDict()
 
+        horizontalScroller = Scrollbar(self, orient=HORIZONTAL, border=3, relief=GROOVE, width=15,
+                                       cursor=Cursors.Hand_1.value)
+        verticalScroller = Scrollbar(self, orient=VERTICAL, border=3, relief=GROOVE, width=15,
+                                     cursor=Cursors.Hand_1.value)
+        self.contentText        = Text(self, state=DISABLED, border=5, relief=SUNKEN, padx=5, pady=5,
+                                       yscrollcommand=verticalScroller.set, xscrollcommand=horizontalScroller.set)
+        horizontalScroller.config(command=self.contentText.xview)
+        verticalScroller.config(command=self.contentText.yview)
+
+        self.contentFrame   = LabelFrame(self.contentText, text="Runnable File Search & Config", border=5, relief=RAISED )
         col = 0
         for pathName, manFileList in manFileMap.items():
             filePath = pathName
@@ -642,13 +602,13 @@ class ToolDesigner(LabelFrame):
         self.messageLabel.bind("<Enter>", self.mouseEnter)
         self.messageLabel.bind("<Leave>", self.mouseLeave)
 
-        self.contentText.pack(expand=True, fill=BOTH)
         horizontalScroller.pack(side=BOTTOM, anchor='w', fill=X)
         verticalScroller.pack(side=RIGHT, fill=Y)
+        self.contentText.pack(expand=True, fill=BOTH)
         self.messageLabel.pack(side=BOTTOM, anchor='w', fill=X)
 
     def setModel(self, manFileMap: OrderedDict):
-        #   print("setModel")
+        print("setModel")
         self.manFileMap = OrderedDict()
         for filePath, pathName in self.listboxNameMap.items():
             self.manFileListMap[pathName].delete(0, END)
@@ -660,8 +620,6 @@ class ToolDesigner(LabelFrame):
                     self.manFileListMap[pathName].insert(END, fileName)
                 fileIdx += 1
 
-            #   THIS DOES NOT WORK
-            #   Selection returned by all Listbox controls is the first element in the last list displayed.
             self.manFileListMap[pathName].selection_set(0)
 
     def setViewState(self, viewState: dict):
@@ -712,113 +670,30 @@ class ToolDesigner(LabelFrame):
             if message['source'] == "PopupMenu.handleCommand":
                 if 'featureName' in message:
                     #   Filter features:
-                    if message['featureName'] == str(PopupMenuItem.ShowSaved):
-                        messagebox.showinfo(str(PopupMenuItem.ShowSaved), "Not Implemented Yet")
-                    elif message['featureName'] == str(PopupMenuItem.NameAndSave):
-                        messagebox.showinfo(str(PopupMenuItem.NameAndSave), "Not Implemented Yet")
-                    elif message['featureName'] == str(PopupMenuItem.CopyTo):
-                        messagebox.showinfo(str(PopupMenuItem.CopyTo), "Not Implemented Yet")
-                    elif message['featureName'] == str(PopupMenuItem.ToggleContent):
-                        messagebox.showinfo(str(PopupMenuItem.ToggleContent), "Not Implemented Yet")
-                    elif message['featureName'] == str(PopupMenuItem.ExploreSO):
-                        messagebox.showinfo(str(PopupMenuItem.ExploreSO), "Not Implemented Yet")
-
+                    if message['featureName'] == "Show Saved Filters":
+                        messagebox.showinfo('Show Saved Filters', "Not Implemented Yet")
+                    elif message['featureName'] == "Name and Save Filter":
+                        messagebox.showinfo('Name and Save Filter', "Not Implemented Yet")
+                    elif message['featureName'] == "Copy Filter to ...":
+                        messagebox.showinfo('Copy Filter to ...', "Not Implemented Yet")
+                    elif message['featureName'] == "Toggle Content Filtering":
+                        messagebox.showinfo('Toggle Content Filtering', "Not Implemented Yet")
+                    elif message['featureName'] == "Explore *.so Library":
+                        messagebox.showinfo('Explore *.so Library', "Not Implemented Yet")
                     #   Man page features
-                    elif message['featureName'] == str(PopupMenuItem.ShowManPage):
-                        messagebox.showinfo(str(PopupMenuItem.ShowManPage), "Not Implemented Yet")
+                    elif message['featureName'] == "Show this Man Page":
+                        messagebox.showinfo('Show this Man Page', "Not Implemented Yet")
 
-                    elif message['featureName'] == str(PopupMenuItem.ShowManPageList):
+                    elif message['featureName'] == "Show Man Pages in List":
                         if 'currentWidgetName' in message:
                             self.showManPageListView(message['currentWidgetName'])
-                        messagebox.showinfo(str(PopupMenuItem.ShowManPageList), "Not Implemented Yet")
+                        messagebox.showinfo('Show Man Pages in List', "Not Implemented Yet")
 
-                    elif message['featureName'] == str(PopupMenuItem.ConfigureTool):
-                        #   messagebox.showinfo('Configure Tool for this Runnable', "Not Implemented Yet")
-                        #   {'source': "PopupMenu.handleCommand",
-                        #                        'featureName': featureName,
-                        #                        'currentWidgetName': self.currentWidgetName}
-                        fileSelected = self.manFileListMap[message['currentWidgetName']].selection_get()
-                        if fileSelected is None:
-                            messagebox.showinfo(message['currentWidgetName'], "No File Selected")
-                        else:
-                            filePath = self.listboxPathMap[message['currentWidgetName']] + '/' + fileSelected
-                            manPage = ManPage(filePath, self.messageReceiver)
-                            #   print("\nMan page unclassified lines:")
-                            #   for line in manPage.content["Unclassified"]:
-                            #       print("\t" + line)
+                    elif message['featureName'] == "Configure Tool for this Runnable":
+                        messagebox.showinfo('Configure Tool for this Runnable', "Not Implemented Yet")
+                    elif message['featureName'] == "Tool Manager":
+                        messagebox.showinfo('Tool Manager', "Not Implemented Yet")
 
-                            if self.listener is not None:
-                                self.listener({
-                                    'source':   "ToolDesigner.Configure Tool for this Runnable",
-                                    'action':   "Add Notebook Tab",
-                                    'manPage': manPage
-                                })
-
-                    elif message['featureName'] == str(PopupMenuItem.SynopsisOptions):
-                        #   messagebox.showinfo(str(PopupMenuItem.SynopsisOptions), "Not Implemented Yet")
-                        fileSelected = self.manFileListMap[message['currentWidgetName']].selection_get()
-                        if fileSelected is None:
-                            messagebox.showinfo(message['currentWidgetName'], "No File Selected")
-                        else:
-                            filePath = self.listboxPathMap[message['currentWidgetName']] + '/' + fileSelected
-                            manPage = ManPage(filePath, self.messageReceiver)
-                            if self.synopsisTopLevel == None:
-                                self.synopsisTopLevel = Toplevel(self)
-                                self.synopsisTopLevel.title("Designer: Synopsis and Options")
-                                self.synopsisTopLevel.geometry("700x700+400+50")
-                                self.synopsisTopLevel.protocol('WM_DELETE_WINDOW', self.exitSynopsisOptions)
-
-                            self.synopsisPanel = SynopsisPanel(self.synopsisTopLevel,
-                                                               manPage.getContent()['Synopsis'],
-                                                               manPage.getContent()['Options'],
-                                                               text=fileSelected, border=5, relief=RAISED)
-                            self.synopsisPanel.pack( expand=True, fill=BOTH )
-
-                    elif message['featureName'] == str(PopupMenuItem.ToolManager):
-                        #   messagebox.showinfo(str(PopupMenuItem.ToolManager), "Not Implemented Yet")
-                        if self.toolManagerToplevel == None:
-                            self.toolManagerToplevel = Toplevel( self)
-                            self.toolManagerToplevel.title("Tool Manager")
-                            self.toolManagerToplevel.geometry("700x500+600+200")
-                            self.toolManagerToplevel.protocol('WM_DELETE_WINDOW', self.exitToolManager)
-                        self.toolManager = ToolManagerTabs(self.toolManagerToplevel, border=5, relief=RAISED)
-                        self.toolManager.pack(expand=True, fill=BOTH)
-                        self.toolManagerToplevel.mainloop()
-
-                    elif message['featureName'] == str(PopupMenuItem.Console):
-                        if self.consoleView is None:
-                            self.consoleView = ConsoleView(mainView, '1000x550+50+50', 'Linux Console')
-                            self.consoleView.protocol('WM_DELETE_WINDOW', self.exitConsole)
-                            self.consoleView.mainloop()
-
-        elif 'application event' in message and isinstance(message['application event'], str):
-            #   source: str, timeStamp: datetime, eventType: EventType, eventName: str, eventAttributes: dict
-            #   Quietly ignore invalid attempts to log application events.
-            #   Future: Log the invalid attempts in a security event log.
-            if '_source' in message and isinstance(message['_source'], str) and \
-                    'timeStamp' in message and isinstance(message['timeStamp'], datetime) and \
-                    'eventType' in message and isinstance(message['eventType'], str) and \
-                        message['eventType'] in ApplicationEvent.TypeNameMap and \
-                    'eventName' in message and isinstance(message['eventName'], str) and \
-                    'eventAttributes' in message and isinstance(message['eventAttributes'], dict):
-                eventType   = ApplicationEvent.TypeNameMap[message['eventType']]
-                EventManager.addEvent(ApplicationEvent(message['_source'], message['timeStamp'], eventType,
-                                                       message['eventName'], message['eventAttributes']))
-
-    def exitToolManager(self):
-        self.toolManagerToplevel.destroy()
-        self.toolManagerToplevel = None
-        self.toolManager = None
-
-    def exitSynopsisOptions(self):
-        self.synopsisTopLevel.destroy()
-        self.synopsisTopLevel = None
-        self.synopsisPanel = None
-
-
-    def exitConsole(self):
-        self.consoleView.destroy()
-        self.consoleView = None
 
     def showManPageListView(self, currentWidgetName: str):
         print("showManPageListView:\t" + currentWidgetName)
@@ -847,28 +722,21 @@ class ToolDesigner(LabelFrame):
 
     def manFileSelected(self, event):
         widgetName  = event.widget._name
-        #   print("manFileSelected in list:\t" + widgetName)
+        print("manFileSelected in list:\t" + widgetName)
         selection = self.manFileListMap[widgetName].selection_get()
         self.messageLabel.config(text="Folder: " + self.filePathMap[widgetName] + "\t\tFile: " + str(selection))
 
     def entryKeyPress(self, event):
-        #   print("\nentryKeyPress in filter:\t" + event.widget._name)
-        #   for name, value in event.__dict__.items():
-        #       print("\t" + name + ":\t" + str(value))
-        pathName = event.widget._name.split(':')[1].strip()
-        if self.manAutoUpdateCheckVarMap['check:' + pathName].get() or str(event.keysym) == 'Return':
-            self.applyFilter(self.listboxPathMap[pathName], event.widget.get())
-
+        print("entryKeyPress in filter:\t" + event.widget._name)
 
     def entryFocusIn(self, event):
-        #   print("entryFocusIn in filter:\t" + event.widget._name)
+        print("entryFocusIn in filter:\t" + event.widget._name)
         if not self.manFilterEntryStateMap[event.widget._name]:
             event.widget.delete(0, END)
             self.manFilterEntryStateMap[event.widget._name] = True
 
     def entryFocusOut(self, event):
-        #   print("entryFocusOut in filter:\t" + event.widget._name)
-        pass
+        print("entryFocusOut in filter:\t" + event.widget._name)
 
     def mouseEnter(self, event):
         event.widget.configure(foreground='blue')
@@ -879,15 +747,17 @@ class ToolDesigner(LabelFrame):
 
     def goButtonPress(self, event):
         print("goButtonPress:\t" + event.widget._name)
-        pathName    = event.widget._name.split(':')[1].strip()
+        goButtonName = event.widget._name
+        pathName    = goButtonName.split(':')[1].strip()
         filterText = self.manFilterEntryMap['filter:' + pathName].get()
+        print("\tFilter Text:\t" + filterText)
         self.applyFilter(self.listboxPathMap[pathName], filterText)
 
     def autoUpdateCheckClick(self, event):
         print("autoUpdateCheckClick:\t" + event.widget._name)
 
     def rightClickHandler(self, event):
-        #   print("rightClickHandler widget-_name:\t" + event.widget._name)
+        print("rightClickHandler widget-_name:\t" + event.widget._name)
         self.manPagePopupMenu.messageReceiver({'currentWidgetName': event.widget._name})
         if "filter:" in event.widget._name or 'go:' in event.widget._name or "check" in event.widget._name:
             try:
@@ -905,7 +775,7 @@ class ToolDesigner(LabelFrame):
 
 
     def applyFilter(self, folderPath: str, filterText: str):
-        #   print("applyFilter:\t" + "pathName:\t" + folderPath + "\t\tfilterText:\t" + filterText)
+        print("applyFilter:\t" + "pathName:\t" + folderPath + "\t\tfilterText:\t" + filterText)
         # Update list of bool saying which is to be included in display
         self.manFileViewMapFiltered[folderPath] = \
             Utils.reSearch(self.manFileMap[folderPath], filterText, self.manFileViewMapFiltered[folderPath])
@@ -934,40 +804,27 @@ class ToolDesigner(LabelFrame):
 def ExitProgram():
     answer = messagebox.askyesno('Exit program ', "Exit the " + PROGRAM_TITLE + " program?")
     if answer:
-        #   EventManager.commit()
-        #   records = EventManager.getDBrecords()
-        #   print("\nApplication Event Records:")
-        #   for timeStamp, info in records.items():
-        #       print("\t" + str(timeStamp) + ":\t" + str(info))
         mainView.destroy()
 
 
 if __name__ == "__main__":
-    EventManager.addEvent(ApplicationEvent( "RunnableSelection module", datetime.now(), EventType.MODULE, "Start",
-                                            {"Developer": "Keith Michael Collins"}))
+    print("argv:\t" + str(argv))
+    options = (('-h',''), ('-d', 'td'))
+    #   See if user wants the default options
+    if argv[1] not in ['-d', '--default']:
+        try:
+            options, arguments = getopt(argv[1:], 'hd:', ['help', 'doc:'])
+        except GetoptError as optErr:
+            print("Unrecognized option in command line arguments:\t" + str(argv[1:]), file=stderr)
+            print(USAGE_HELP)
+            exit(1)
 
-    if CLI_ACTIVE:
-        print("argv:\t" + str(argv))
-        options = (('-h',''), ('-d', 'td'))
-        #   See if user wants the default options
-        if argv[1] not in ['-d', '--default']:
-            try:
-                options, arguments = getopt(argv[1:], 'hd:', ['help', 'doc'])
-            except GetoptError as optErr:
-                print("Unrecognized option in command line arguments:\t" + str(argv[1:]), file=stderr)
-                print(USAGE_HELP)
-                exit(1)
-
-        for opt, arg in options:
-            if opt in ['-h', '--help']:
-                print(USAGE_HELP)
-            elif opt in ['-d', '--doc']:
-                if CLI_HELP_DEVELOPER:
-                    #   quick default:
-                    print(ToolDesigner.__doc__)
-                    #   actual argument selection:
-                    if arg == 'td':
-                        print(ToolDesigner.__doc__)
+    for opt, arg in options:
+        if opt in ['-h', '--help']:
+            print(USAGE_HELP)
+        elif opt in ['-d', '--doc']:
+            if arg == 'td':
+                print(ToolDesigner.__doc__)
 
     mainView = Tk()
 
@@ -989,7 +846,7 @@ if __name__ == "__main__":
     print(acpiManNroff)
     """
 
-    mainView.geometry("1100x650+50+50")
+    mainView.geometry("800x600+300+50")
     mainView.title(PROGRAM_TITLE)
     mainView.protocol('WM_DELETE_WINDOW', lambda: ExitProgram())
 

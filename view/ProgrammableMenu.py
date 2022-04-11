@@ -29,7 +29,7 @@
 #       method invokable from that context.
 #
 
-from tkinter import Menu, Tk, Frame, Label
+from tkinter import Menu, Tk, Frame, Label, BooleanVar
 
 
 class ProgrammablePopup(Menu):

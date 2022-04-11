@@ -9,6 +9,11 @@
 #       Primary view should have sections listed vertically on the left with a text windos in the central content
 #       area for the text.
 #
+#       2022-04-08:
+#           ManPage sections view alternatives:     (Already have a tree view of the ManPage model)
+#               List on left with content Text or Message on the right,
+#               ttk.Notebook with one tab per man page section.
+#
 
 from tkinter import Tk, messagebox
 
