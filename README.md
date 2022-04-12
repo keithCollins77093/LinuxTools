@@ -6,3 +6,6 @@ WARNING:
   IT IS A ROUGH PROTOTYPE ONLY.
   USE AT YOUR OWN RISK
   
+If you want to financially support my collection of home digital open source community freeware projects, 
+which are hosted here at GitHub in this, my only GitHub account:
+https://www.patreon.com/LinuxTools
