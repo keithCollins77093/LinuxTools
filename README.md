@@ -9,3 +9,6 @@ WARNING:
 If you want to financially support my collection of home digital open source community freeware projects, 
 which are hosted here at GitHub in this, my only GitHub account:
 https://www.patreon.com/LinuxTools
+
+Or you can contribute here:
+https://www.buymeacoffee.com/keithmichah
